@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kiho/react-form-builder.git"
+    "url": "git+https://github.com/jjuch/react-form-builder.git"
   },
   "files": [
     "lib",
