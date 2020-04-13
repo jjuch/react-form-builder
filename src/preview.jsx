@@ -40,6 +40,7 @@ export default class Preview extends React.Component {
   componentDidMount() {
     const { data, url, saveUrl } = this.props;
     store.dispatch('load', { loadUrl: url, saveUrl, data: data || [] });
+    console.log(this.props.data || []);
     document.addEventListener('mousedown', this.editModeOff);
   }
 
@@ -104,6 +105,7 @@ export default class Preview extends React.Component {
   }
 
   insertCard(item, hoverIndex) {
+    console.log("Insert Card")
     const { data } = this.state;
     data.splice(hoverIndex, 0, item);
     this.saveData(item, hoverIndex, hoverIndex);
@@ -140,6 +142,7 @@ export default class Preview extends React.Component {
     if (this.props.editMode) { classes += ' is-editing'; }
     const data = this.state.data.filter(x => !!x);
     const items = data.map((item, index) => this.getElement(item, index));
+    console.log(items);
     return (
       <div className={classes}>
         <div className="edit-form" ref={this.editForm}>

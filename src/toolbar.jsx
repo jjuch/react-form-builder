@@ -214,9 +214,9 @@ export default class Toolbar extends React.Component {
         field_name: 'camera_',
       },
       {
-        key: 'File',
-        name: 'File',
-        icon: 'fa fa-file-upload',
+        key: 'FileUpload',
+        name: 'File Upload',
+        icon: 'fa fa-file-text',
         content: 'Placeholder Label',
         field_name: 'file_',
       }

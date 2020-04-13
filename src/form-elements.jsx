@@ -792,6 +792,92 @@ class Camera extends React.Component {
   }
 }
 
+class FileUpload extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { file: null };
+  }
+
+  displayFile = (e) => {
+    const self = this;
+    const target = e.target;
+    let file; let
+      reader;
+
+    if (target.files && target.files.length) {
+      file = target.files[0];
+      console.log(file);
+      // eslint-disable-next-line no-undef
+      if (/\.(pdf|docx?)/i.test(file.name)) {
+        // reader = new FileReader();
+        // reader.readAsDataURL(file);
+
+        // reader.onloadend = () => {
+        //   self.setState({
+        //     file: reader.result,
+        //   });
+        // };
+        self.setState({
+          file: file.name
+        })
+      }
+    }
+  };
+
+  clearFile = () => {
+    this.setState({
+      file: null,
+    });
+  };
+
+  render() {
+    let baseClasses = 'SortableItem rfb-item';
+    const name = this.props.data.field_name;
+    const fileInputStyle = this.state.file ? { display: 'none' } : null;
+    if (this.props.data.pageBreakBefore) { baseClasses += ' alwaysbreak'; }
+    let sourceDataURL;
+    if (this.props.read_only === true && this.props.defaultValue && this.props.defaultValue.length > 0) {
+      if (this.props.defaultValue.indexOf(name > -1)) {
+        sourceDataURL = this.props.defaultValue;
+      } else {
+        sourceDataURL = `data:application/pdf;base64,${this.props.defaultValue}`;
+      }
+    }
+    console.log('sourceDataURL', sourceDataURL);
+    return (
+      <div className={baseClasses}>
+        <ComponentHeader {...this.props} />
+        <div className="form-group">
+          <ComponentLabel {...this.props} />
+          {this.props.read_only === true && this.props.defaultValue && this.props.defaultValue.length > 0
+            ? (<a href={sourceDataURL}>{this.state.file}</a>)
+            : (<div className="image-upload-container">
+
+            <div style={fileInputStyle}>
+              <input name={name} type="file" accept="application/*" capture="camera" className="image-upload" onChange={this.displayFile} />
+              <div className="image-upload-control">
+                <div className="btn btn-default btn-school"><i className="fa fa-file-text"></i> Upload File</div>
+                <p>Select an file from your computer or device.</p>
+              </div>
+            </div>
+
+            { this.state.file &&
+              <div>
+                {/* <img src={ this.state.img } height="100" className="image-upload-preview" /><br /> */}
+                <a href={sourceDataURL}>{this.state.file}</a>
+                <div className="btn btn-school btn-image-clear" onClick={this.clearImage}>
+                  <i className="fa fa-times"></i> Clear File
+                </div>
+              </div>
+            }
+          </div>)
+        }
+        </div>
+      </div>
+    );
+  }
+}
+
 class Range extends React.Component {
   constructor(props) {
     super(props);
@@ -890,6 +976,7 @@ FormElements.Tags = Tags;
 FormElements.HyperLink = HyperLink;
 FormElements.Download = Download;
 FormElements.Camera = Camera;
+FormElements.FileUpload = FileUpload;
 FormElements.Range = Range;
 
 export default FormElements;

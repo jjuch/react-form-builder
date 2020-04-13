@@ -9,7 +9,7 @@ import FormValidator from './form-validator';
 import FormElements from './form-elements';
 
 const {
-  Image, Checkboxes, Signature, Download, Camera,
+  Image, Checkboxes, Signature, Download, Camera, FileUpload
 } = FormElements;
 
 export default class ReactForm extends React.Component {
@@ -72,6 +72,8 @@ export default class ReactForm extends React.Component {
       $item.value = ref.state.value;
     } else if (item.element === 'Camera') {
       $item.value = ref.state.img ? ref.state.img.replace('data:image/png;base64,', '') : '';
+    } else if (item.element === 'FileUpload') {
+      $item.value = ref.state.file ? ref.state.file('data:application/pdf;base64', '') : '';
     } else if (ref && ref.inputField) {
       $item = ReactDOM.findDOMNode(ref.inputField.current);
       if (typeof $item.value === 'string') {
@@ -247,13 +249,15 @@ export default class ReactForm extends React.Component {
   }
 
   render() {
-    let data_items = this.props.data;
+    let data_items = this.props.data.filter(el => el !== null);
+    console.log(data_items);
 
     if (this.props.display_short) {
       data_items = this.props.data.filter((i) => i.alternateForm === true);
     }
 
     data_items.forEach((item) => {
+      console.log(item);
       if (item.readOnly && item.variableKey && this.props.variables[item.variableKey]) {
         this.answerData[item.field_name] = this.props.variables[item.variableKey];
       }
@@ -281,6 +285,8 @@ export default class ReactForm extends React.Component {
           return <Download download_path={this.props.download_path} mutable={true} key={`form_${item.id}`} data={item} />;
         case 'Camera':
           return <Camera ref={c => this.inputs[item.field_name] = c} read_only={this.props.read_only || item.readOnly} mutable={true} key={`form_${item.id}`} data={item} defaultValue={this._getDefaultValue(item)} />;
+        case 'FileUpload':
+          return <FileUpload ref={c => this.inputs[item.field_name] = c} read_only={this.props.read_only || item.readOnly} mutable={true} key={`form_${item.id}`} data={item} defaultValue={this._getDefaultValue(item)} />;
         default:
           return this.getSimpleElement(item);
       }
