@@ -746,6 +746,7 @@ class Camera extends React.Component {
   };
 
   render() {
+    console.log(this.props);
     let baseClasses = 'SortableItem rfb-item';
     const name = this.props.data.field_name;
     const fileInputStyle = this.state.img ? { display: 'none' } : null;
@@ -795,7 +796,10 @@ class Camera extends React.Component {
 class FileUpload extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { file: null };
+    this.state = { 
+      file: null,
+      link: null
+     };
   }
 
   displayFile = (e) => {
@@ -804,19 +808,21 @@ class FileUpload extends React.Component {
     let file; let
       reader;
 
+    console.log(target.value);
+
     if (target.files && target.files.length) {
       file = target.files[0];
-      console.log(file);
+      console.log(window.URL.createObjectURL(file));
       // eslint-disable-next-line no-undef
-      if (/\.(pdf|docx?)/i.test(file.name)) {
-        // reader = new FileReader();
-        // reader.readAsDataURL(file);
+      if (/\.(pdf|docx?|txt)/i.test(file.name)) {
+        reader = new FileReader();
+        reader.readAsDataURL(file);
 
-        // reader.onloadend = () => {
-        //   self.setState({
-        //     file: reader.result,
-        //   });
-        // };
+        reader.onloadend = () => {
+            this.setState({
+              link: window.URL.createObjectURL(file)
+            })
+        };
         self.setState({
           file: file.name
         })
@@ -827,13 +833,14 @@ class FileUpload extends React.Component {
   clearFile = () => {
     this.setState({
       file: null,
+      link: null
     });
   };
 
   render() {
     let baseClasses = 'SortableItem rfb-item';
     const name = this.props.data.field_name;
-    const fileInputStyle = this.state.file ? { display: 'none' } : null;
+    const fileInputStyle = this.state.link ? { display: 'none' } : null;
     if (this.props.data.pageBreakBefore) { baseClasses += ' alwaysbreak'; }
     let sourceDataURL;
     if (this.props.read_only === true && this.props.defaultValue && this.props.defaultValue.length > 0) {
@@ -844,6 +851,7 @@ class FileUpload extends React.Component {
       }
     }
     console.log('sourceDataURL', sourceDataURL);
+    console.log(this.props)
     return (
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
@@ -854,18 +862,19 @@ class FileUpload extends React.Component {
             : (<div className="image-upload-container">
 
             <div style={fileInputStyle}>
-              <input name={name} type="file" accept="application/*" capture="camera" className="image-upload" onChange={this.displayFile} />
+              <input name={name} type="file" accept="application/pdf,.doc,.docx,.txt" capture="camera" className="image-upload" onChange={this.displayFile} />
               <div className="image-upload-control">
                 <div className="btn btn-default btn-school"><i className="fa fa-file-text"></i> Upload File</div>
-                <p>Select an file from your computer or device.</p>
+                <p>Select a file from your computer or device.</p>
               </div>
             </div>
 
             { this.state.file &&
               <div>
-                {/* <img src={ this.state.img } height="100" className="image-upload-preview" /><br /> */}
-                <a href={sourceDataURL}>{this.state.file}</a>
-                <div className="btn btn-school btn-image-clear" onClick={this.clearImage}>
+                <a 
+                  href={this.state.link}
+                  target="_blank" rel="noopener noreferrer">{this.state.file}</a>
+                <div className="btn btn-school btn-image-clear" onClick={this.clearFile}>
                   <i className="fa fa-times"></i> Clear File
                 </div>
               </div>
