@@ -43,6 +43,7 @@ export default class FormElementsEdit extends React.Component {
       let file = e.target.files[0]
       this_element[elemProperty] = window.URL.createObjectURL(file);
       this_element['file_name'] = targValue.substr(targValue.lastIndexOf("\\") + 1);
+      this_element['file'] = e.target.files[0]
     }
     this.setState({
       element: this_element,

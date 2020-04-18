@@ -701,7 +701,6 @@ class Download extends React.Component {
   render() {
     let baseClasses = 'SortableItem rfb-item';
     if (this.props.data.pageBreakBefore) { baseClasses += ' alwaysbreak'; }
-    console.log(this.props.data);
     return (
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
@@ -746,7 +745,6 @@ class Camera extends React.Component {
   };
 
   render() {
-    console.log(this.props);
     let baseClasses = 'SortableItem rfb-item';
     const name = this.props.data.field_name;
     const fileInputStyle = this.state.img ? { display: 'none' } : null;
@@ -759,7 +757,7 @@ class Camera extends React.Component {
         sourceDataURL = `data:image/png;base64,${this.props.defaultValue}`;
       }
     }
-    console.log('sourceDataURL', sourceDataURL);
+
     return (
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
@@ -798,34 +796,25 @@ class FileUpload extends React.Component {
     super(props);
     this.state = { 
       file: null,
-      link: null
+      file_link: null,
+      file_name: null
      };
   }
 
-  displayFile = (e) => {
-    const self = this;
+  processFile = (e) => {
     const target = e.target;
-    let file; let
-      reader;
-
-    console.log(target.value);
+    let file;
 
     if (target.files && target.files.length) {
       file = target.files[0];
-      console.log(window.URL.createObjectURL(file));
+      
       // eslint-disable-next-line no-undef
       if (/\.(pdf|docx?|txt)/i.test(file.name)) {
-        reader = new FileReader();
-        reader.readAsDataURL(file);
-
-        reader.onloadend = () => {
-            this.setState({
-              link: window.URL.createObjectURL(file)
-            })
-        };
-        self.setState({
-          file: file.name
-        })
+        this.setState({
+          file: file,
+          file_link: window.URL.createObjectURL(file),
+          file_name: file.name
+        });
       }
     }
   };
@@ -833,14 +822,15 @@ class FileUpload extends React.Component {
   clearFile = () => {
     this.setState({
       file: null,
-      link: null
+      file_name: null,
+      file_link: null
     });
   };
 
   render() {
     let baseClasses = 'SortableItem rfb-item';
     const name = this.props.data.field_name;
-    const fileInputStyle = this.state.link ? { display: 'none' } : null;
+    const fileInputStyle = this.state.file_link ? { display: 'none' } : null;
     if (this.props.data.pageBreakBefore) { baseClasses += ' alwaysbreak'; }
     let sourceDataURL;
     if (this.props.read_only === true && this.props.defaultValue && this.props.defaultValue.length > 0) {
@@ -850,19 +840,18 @@ class FileUpload extends React.Component {
         sourceDataURL = `data:application/pdf;base64,${this.props.defaultValue}`;
       }
     }
-    console.log('sourceDataURL', sourceDataURL);
-    console.log(this.props)
+
     return (
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
         <div className="form-group">
           <ComponentLabel {...this.props} />
           {this.props.read_only === true && this.props.defaultValue && this.props.defaultValue.length > 0
-            ? (<a href={sourceDataURL}>{this.state.file}</a>)
+            ? (<a href={sourceDataURL}>{this.state.file_name}</a>)
             : (<div className="image-upload-container">
 
             <div style={fileInputStyle}>
-              <input name={name} type="file" accept="application/pdf,.doc,.docx,.txt" capture="camera" className="image-upload" onChange={this.displayFile} />
+              <input name={name} type="file" accept="application/pdf,.doc,.docx,.txt" capture="camera" className="image-upload" onChange={this.processFile} />
               <div className="image-upload-control">
                 <div className="btn btn-default btn-school"><i className="fa fa-file-text"></i> Upload File</div>
                 <p>Select a file from your computer or device.</p>
@@ -872,8 +861,8 @@ class FileUpload extends React.Component {
             { this.state.file &&
               <div>
                 <a 
-                  href={this.state.link}
-                  target="_blank" rel="noopener noreferrer">{this.state.file}</a>
+                  href={this.state.file_link}
+                  target="_blank" rel="noopener noreferrer">{this.state.file_name}</a>
                 <div className="btn btn-school btn-image-clear" onClick={this.clearFile}>
                   <i className="fa fa-times"></i> Clear File
                 </div>

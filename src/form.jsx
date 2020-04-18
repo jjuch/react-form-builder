@@ -250,14 +250,12 @@ export default class ReactForm extends React.Component {
 
   render() {
     let data_items = this.props.data.filter(el => el !== null);
-    console.log(data_items);
 
     if (this.props.display_short) {
       data_items = this.props.data.filter((i) => i.alternateForm === true);
     }
 
     data_items.forEach((item) => {
-      console.log(item);
       if (item.readOnly && item.variableKey && this.props.variables[item.variableKey]) {
         this.answerData[item.field_name] = this.props.variables[item.variableKey];
       }
