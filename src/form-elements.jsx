@@ -701,12 +701,12 @@ class Download extends React.Component {
   render() {
     let baseClasses = 'SortableItem rfb-item';
     if (this.props.data.pageBreakBefore) { baseClasses += ' alwaysbreak'; }
-
+    console.log(this.props.data);
     return (
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
         <div className="form-group">
-          <a href={`${this.props.download_path}?id=${this.props.data.file_path}`}>{this.props.data.content}</a>
+          <a href={this.props.data.file_path}>{this.props.data.content}</a>
         </div>
       </div>
     );

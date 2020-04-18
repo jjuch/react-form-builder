@@ -37,8 +37,13 @@ export default class FormElementsEdit extends React.Component {
     // elemProperty could be content or label
     // targProperty could be value or checked
     const this_element = this.state.element;
-    this_element[elemProperty] = e.target[targProperty];
-
+    const targValue = e.target[targProperty]
+    this_element[elemProperty] = targValue;
+    if (elemProperty === 'file_path') {
+      let file = e.target.files[0]
+      this_element[elemProperty] = window.URL.createObjectURL(file);
+      this_element['file_name'] = targValue.substr(targValue.lastIndexOf("\\") + 1);
+    }
     this.setState({
       element: this_element,
       dirty: true,
@@ -152,13 +157,36 @@ export default class FormElementsEdit extends React.Component {
         }
         { this.props.element.hasOwnProperty('file_path') &&
           <div className="form-group">
-            <label className="control-label" htmlFor="fileSelect">Choose file:</label>
-            <select id="fileSelect" className="form-control" defaultValue={this.props.element.file_path} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'file_path', 'value')}>
+            <label className="control-label" htmlFor="fileSelect">{this.props.element.file_path === ""?"Choose file:":"Selected file:"}</label>
+            {this.props.element.file_path === ""
+              ?<input id="fileSelect" type="file" accept="application/pdf,.doc,.docx,.txt" className="image-upload" 
+              onChange={(e) => {
+                this.editElementProp('file_path', 'value', e)
+              }}
+              onBlur={this.updateElement.bind(this)} />
+              :<div>
+                <div>
+                  <a href={this.props.element.file_path} target="_blank" rel="noopener noreferrer">{this.props.element.file_name}</a>
+                </div>
+                <div className="btn btn-school btn-image-clear" >
+                  Select a new file:
+                </div>
+                <div>
+                  <input id="fileSelect" type="file" accept="application/pdf,.doc,.docx,.txt" className="image-upload" 
+                  onChange={(e) => {
+                    this.editElementProp('file_path', 'value',e)
+                  }}
+                  onBlur={this.updateElement.bind(this)}
+                   />
+                </div>
+              </div>
+            }
+            {/* <select id="fileSelect" className="form-control" defaultValue={this.props.element.file_path} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'file_path', 'value')}>
               {this_files.map((file) => {
                 const this_key = `file_${file.id}`;
                 return <option value={file.id} key={this_key}>{file.file_name}</option>;
               })}
-            </select>
+            </select> */}
           </div>
         }
         { this.props.element.hasOwnProperty('href') &&
@@ -245,7 +273,7 @@ export default class FormElementsEdit extends React.Component {
               <div className="checkbox">
                 <label>
                   <input type="checkbox" checked={this_checked_inline} value={true} onChange={this.editElementProp.bind(this, 'inline', 'checked')} />
-                  Display horizonal
+                  Display horizontal
                 </label>
               </div>
             }
@@ -263,7 +291,7 @@ export default class FormElementsEdit extends React.Component {
           : (<div/>)
         }
 
-        {canHavePageBreakBefore &&
+        {/* {canHavePageBreakBefore &&
           <div className="form-group">
             <label className="control-label">Print Options</label>
             <div className="checkbox">
@@ -273,8 +301,8 @@ export default class FormElementsEdit extends React.Component {
               </label>
             </div>
           </div>
-        }
-
+        } */}
+{/* 
         {canHaveAlternateForm &&
           <div className="form-group">
             <label className="control-label">Alternate/Signature Page</label>
@@ -285,7 +313,7 @@ export default class FormElementsEdit extends React.Component {
               </label>
             </div>
           </div>
-        }
+        } */}
 
         { this.props.element.hasOwnProperty('step') &&
           <div className="form-group">
