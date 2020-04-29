@@ -222,7 +222,13 @@ export default class FormElementsEdit extends React.Component {
           <div>
             <div className="form-group">
               <label className="control-label" htmlFor="srcInput">Link to:</label>
-              <input id="srcInput" type="text" className="form-control" defaultValue={this.props.element.src} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'src', 'value')} />
+              <input 
+                id="srcInput" 
+                type="text" 
+                className="form-control" 
+                defaultValue={this.props.element.src} 
+                onBlur={this.updateElement.bind(this)} 
+                onChange={this.editElementProp.bind(this, 'src', 'value')} />
             </div>
             <div className="form-group">
               <div className="checkbox">

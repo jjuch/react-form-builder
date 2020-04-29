@@ -733,7 +733,6 @@ class Download extends React.Component {
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
         <div className="form-group">
-          {/* TODO: correct link */}
           <a href={this.state.file_link}>{this.props.data.content}</a>
         </div>
       </div>
@@ -744,7 +743,10 @@ class Download extends React.Component {
 class Camera extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { img: null };
+    this.state = { 
+      img: null,
+      img_link: null
+    };
   }
 
   displayImage = (e) => {
@@ -762,6 +764,7 @@ class Camera extends React.Component {
       reader.onloadend = () => {
         self.setState({
           img: reader.result,
+          img_link: window.URL.createObjectURL(file)
         });
       };
     }
@@ -770,6 +773,7 @@ class Camera extends React.Component {
   clearImage = () => {
     this.setState({
       img: null,
+      img_link: null
     });
   };
 
