@@ -26,7 +26,16 @@ export default class FormElementsEdit extends React.Component {
       element: this.props.element,
       data: this.props.data,
       dirty: false,
+      file_link: "#"
     };
+  }
+
+  componentDidMount () {
+    console.log(this.props);
+    const this_element = this.props.element;
+    if (this_element['file_path'] !== undefined && this_element['file_path'] !== "") {
+      this.createFileLink(this_element['file_path']);
+    }
   }
 
   toggleRequired() {
@@ -41,7 +50,9 @@ export default class FormElementsEdit extends React.Component {
     this_element[elemProperty] = targValue;
     if (elemProperty === 'file_path') {
       let file = e.target.files[0]
-      this_element[elemProperty] = window.URL.createObjectURL(file);
+      const fileLink =  window.URL.createObjectURL(file);
+      this_element[elemProperty] = fileLink;
+      this.createFileLink(fileLink);
       this_element['file_name'] = targValue.substr(targValue.lastIndexOf("\\") + 1);
       this_element['file'] = e.target.files[0]
     }
@@ -104,6 +115,18 @@ export default class FormElementsEdit extends React.Component {
     }
   }
 
+  createFileLink = (linkData) => {
+    if (linkData.indexOf("blob:") > -1){
+      this.setState({ file_link: linkData });
+    } else {
+      (async () => {
+        const link = await this.props.preview.props.getS3File(linkData);
+        console.log(link);
+        this.setState({ file_link: link });
+      })();
+    }
+  }
+
   render() {
     if (this.state.dirty) {
       this.props.element.dirty = true;
@@ -156,7 +179,7 @@ export default class FormElementsEdit extends React.Component {
               stripPastedStyles={true} />
           </div>
         }
-        { this.props.element.hasOwnProperty('file_path') &&
+        {this.props.element.hasOwnProperty('file_path') &&
           <div className="form-group">
             <label className="control-label" htmlFor="fileSelect">{this.props.element.file_path === ""?"Choose file:":"Selected file:"}</label>
             {this.props.element.file_path === ""
@@ -167,7 +190,7 @@ export default class FormElementsEdit extends React.Component {
               onBlur={this.updateElement.bind(this)} />
               :<div>
                 <div>
-                  <a href={this.props.element.file_path} target="_blank" rel="noopener noreferrer">{this.props.element.file_name}</a>
+                  <a href={this.state.file_link} target="_blank" rel="noopener noreferrer">{this.props.element.file_name}</a>
                 </div>
                 <div className="btn btn-school btn-image-clear" >
                   Select a new file:
@@ -175,7 +198,7 @@ export default class FormElementsEdit extends React.Component {
                 <div>
                   <input id="fileSelect" type="file" accept="application/pdf,.doc,.docx,.txt" className="image-upload" 
                   onChange={(e) => {
-                    this.editElementProp('file_path', 'value',e)
+                    this.editElementProp('file_path', 'value', e)
                   }}
                   onBlur={this.updateElement.bind(this)}
                    />

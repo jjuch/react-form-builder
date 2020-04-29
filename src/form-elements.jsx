@@ -698,14 +698,43 @@ class HyperLink extends React.Component {
 }
 
 class Download extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      file_link: "#"
+    };
+  }
+
+  componentDidMount() {
+    const this_element = this.props.data;
+    if (this_element['file_path'] !== undefined && this_element['file_path'] !== "") {
+      this.createFileLink(this_element['file_path']);
+    }
+  }
+
+  createFileLink = (linkData) => {
+    console.log(this.props);
+    if (linkData.indexOf("blob:") > -1){
+      this.setState({ file_link: linkData });
+    } else {
+      (async () => {
+        const link = await this.props.getS3File(linkData);
+        console.log(link);
+        this.setState({ file_link: link });
+      })();
+    }
+  }
+
   render() {
+    console.log(this.props);
     let baseClasses = 'SortableItem rfb-item';
     if (this.props.data.pageBreakBefore) { baseClasses += ' alwaysbreak'; }
     return (
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
         <div className="form-group">
-          <a href={this.props.data.file_path}>{this.props.data.content}</a>
+          {/* TODO: correct link */}
+          <a href={this.state.file_link}>{this.props.data.content}</a>
         </div>
       </div>
     );

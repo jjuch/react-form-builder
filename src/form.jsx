@@ -261,6 +261,8 @@ export default class ReactForm extends React.Component {
       }
     });
 
+    console.log(this.props);
+
     const items = data_items.map(item => {
       switch (item.element) {
         case 'TextInput':
@@ -280,7 +282,7 @@ export default class ReactForm extends React.Component {
         case 'Image':
           return <Image ref={c => this.inputs[item.field_name] = c} handleChange={this.handleChange} mutable={true} key={`form_${item.id}`} data={item} defaultValue={this._getDefaultValue(item)} />;
         case 'Download':
-          return <Download download_path={this.props.download_path} mutable={true} key={`form_${item.id}`} data={item} />;
+          return <Download download_path={this.props.download_path} mutable={true} key={`form_${item.id}`} data={item} getS3File={this.props.getS3File} />;
         case 'Camera':
           return <Camera ref={c => this.inputs[item.field_name] = c} read_only={this.props.read_only || item.readOnly} mutable={true} key={`form_${item.id}`} data={item} defaultValue={this._getDefaultValue(item)} />;
         case 'FileUpload':

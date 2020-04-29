@@ -67,7 +67,8 @@ class ReactFormBuilder extends React.Component {
                  editModeOn={this.editModeOn}
                  editMode={this.state.editMode}
                  variables={this.props.variables}
-                 editElement={this.state.editElement} />
+                 editElement={this.state.editElement}
+                 getS3File={this.props.getS3File} />
              <Toolbar {...toolbarProps} />
            </div>
          </div>
