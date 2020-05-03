@@ -208,6 +208,12 @@ export default class ReactForm extends React.Component {
     }
   }
 
+  handleBack = (e) => {
+    e.preventDefault();
+    const data = this._collectFormData(this.props.data);
+    this.props.back_action(data);
+  }
+
   validateForm() {
     const errors = [];
     let data_items = this.props.data;
@@ -263,8 +269,6 @@ export default class ReactForm extends React.Component {
       }
     });
 
-    console.log(this.props);
-
     const items = data_items.map(item => {
       switch (item.element) {
         case 'TextInput':
@@ -319,7 +323,9 @@ export default class ReactForm extends React.Component {
                 <input type='submit' className='btn btn-school btn-big btn-agree' value={actionName} />
               }
               { !this.props.hide_actions && this.props.back_action &&
-                <a href={this.props.back_action} className='btn btn-default btn-cancel btn-big'>{backName}</a>
+                typeof this.props.back_action === "string" 
+                ? <a href={this.props.back_action} className='btn btn-default btn-cancel btn-big'>{backName}</a>
+                : <a onClick={this.handleBack} className='btn btn-default btn-cancel btn-big'>{backName}</a>
               }
             </div>
           </form>

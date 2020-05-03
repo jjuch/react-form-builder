@@ -436,6 +436,7 @@ class Signature extends React.Component {
       props.ref = this.inputField;
     }
     const pad_props = {};
+    pad_props.backgroundColor = "rgba(0,0,0,0.1)"
     // umd requires canvasProps={{ width: 400, height: 150 }}
     if (this.props.mutable) {
       pad_props.defaultValue = defaultValue;
@@ -713,7 +714,6 @@ class Download extends React.Component {
   }
 
   createFileLink = (linkData) => {
-    console.log(this.props);
     if (linkData.indexOf("blob:") > -1){
       this.setState({ file_link: linkData });
     } else {
@@ -726,7 +726,6 @@ class Download extends React.Component {
   }
 
   render() {
-    console.log(this.props);
     let baseClasses = 'SortableItem rfb-item';
     if (this.props.data.pageBreakBefore) { baseClasses += ' alwaysbreak'; }
     return (
