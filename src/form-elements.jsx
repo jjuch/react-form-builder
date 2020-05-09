@@ -718,8 +718,12 @@ class Download extends React.Component {
       this.setState({ file_link: linkData });
     } else {
       (async () => {
-        const link = await this.props.getS3File(linkData);
-        console.log(link);
+        let link;
+        if (this.props.data.creatorId === undefined){
+          link = await this.props.getS3File(linkData);
+        } else {
+          link = await this.props.getS3File(linkData, this.props.data.creatorId);
+        }
         this.setState({ file_link: link });
       })();
     }
