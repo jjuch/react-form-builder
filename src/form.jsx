@@ -44,6 +44,20 @@ export default class ReactForm extends React.Component {
     return this.answerData[item.field_name];
   }
 
+  _getCustomDefaultValue(item, property) {
+    let propertyValue;
+    try {
+      this.props.answer_data.forEach(el => {
+        if (el.name === item.field_name){
+          propertyValue = el[property] || null
+        }
+      })
+      return propertyValue;
+    } catch (error) {
+      return null
+    }
+  }
+
   _optionsDefaultValue(item) {
     const defaultValue = this._getDefaultValue(item);
     if (defaultValue) {
@@ -63,6 +77,7 @@ export default class ReactForm extends React.Component {
     let $item = {
       element: item.element,
       value: '',
+      file: '',
     };
     if (item.element === 'Rating') {
       $item.value = ref.inputField.current.state.rating;
@@ -73,9 +88,11 @@ export default class ReactForm extends React.Component {
     } else if (item.element === 'Camera') {
       // $item.value = ref.state.img ? ref.state.img.replace('data:image/png;base64,', '') : '';
       $item.value = ref.state.img_link ? ref.state.img_link : '';
+      $item.file = ref.state.file ? ref.state.file : '';
     } else if (item.element === 'FileUpload') {
       // $item.value = ref.state.file ? ref.state.file('data:application/pdf;base64', '') : '';
       $item.value = ref.state.file_link ? ref.state.file_link : '';
+      $item.file = ref.state.file ? ref.state.file : '';
     } else if (ref && ref.inputField) {
       $item = ReactDOM.findDOMNode(ref.inputField.current);
       if (typeof $item.value === 'string') {
@@ -152,6 +169,14 @@ export default class ReactForm extends React.Component {
         }
       });
       itemData.value = checked_options;
+    } else if (item.element === 'Camera') {
+      const itemValues = this._getItemValue(item, ref);
+      itemData.value = itemValues.value;
+      itemData.file = itemValues.file;
+    } else if (item.element === 'FileUpload') {
+      const itemValues = this._getItemValue(item, ref);
+      itemData.value = itemValues.value;
+      itemData.file = itemValues.file;
     } else {
       if (!ref) return null;
       itemData.value = this._getItemValue(item, ref).value;
@@ -290,9 +315,9 @@ export default class ReactForm extends React.Component {
         case 'Download':
           return <Download download_path={this.props.download_path} mutable={true} key={`form_${item.id}`} data={item} getS3File={this.props.getS3File} />;
         case 'Camera':
-          return <Camera ref={c => this.inputs[item.field_name] = c} read_only={this.props.read_only || item.readOnly} mutable={true} key={`form_${item.id}`} data={item} defaultValue={this._getDefaultValue(item)} />;
+          return <Camera ref={c => this.inputs[item.field_name] = c} read_only={this.props.read_only || item.readOnly} mutable={true} key={`form_${item.id}`} data={item} getS3File={this.props.getS3File} defaultValue={this._getDefaultValue(item)} creatorId={this._getCustomDefaultValue(item, 'creatorId')} />;
         case 'FileUpload':
-          return <FileUpload ref={c => this.inputs[item.field_name] = c} read_only={this.props.read_only || item.readOnly} mutable={true} key={`form_${item.id}`} data={item} defaultValue={this._getDefaultValue(item)} />;
+          return <FileUpload ref={c => this.inputs[item.field_name] = c} read_only={this.props.read_only || item.readOnly} mutable={true} key={`form_${item.id}`} data={item} getS3File={this.props.getS3File} defaultValue={this._getDefaultValue(item)} creatorId={this._getCustomDefaultValue(item, 'creatorId')} />;
         default:
           return this.getSimpleElement(item);
       }

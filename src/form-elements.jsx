@@ -748,8 +748,23 @@ class Camera extends React.Component {
     super(props);
     this.state = { 
       img: null,
+      file: null,
       img_link: null
     };
+  }
+
+  componentDidMount() {
+    if (this.props.defaultValue !== "" && this.props.defaultValue !== undefined) {
+      (async () => {
+        let link;
+        if (this.props.creatorId === undefined) {
+          link = await this.props.getS3File(this.props.defaultValue)
+        } else {
+          link = await this.props.getS3File(this.props.defaultValue, this.props.creatorId)
+        }
+        this.setState({ img_link: link });
+      })();
+    }
   }
 
   displayImage = (e) => {
@@ -767,6 +782,7 @@ class Camera extends React.Component {
       reader.onloadend = () => {
         self.setState({
           img: reader.result,
+          file: file,
           img_link: window.URL.createObjectURL(file)
         });
       };
@@ -776,6 +792,7 @@ class Camera extends React.Component {
   clearImage = () => {
     this.setState({
       img: null,
+      file: null,
       img_link: null
     });
   };
@@ -783,16 +800,16 @@ class Camera extends React.Component {
   render() {
     let baseClasses = 'SortableItem rfb-item';
     const name = this.props.data.field_name;
-    const fileInputStyle = this.state.img ? { display: 'none' } : null;
+    const fileInputStyle = (this.state.img || this.state.img_link) ? { display: 'none' } : null;
     if (this.props.data.pageBreakBefore) { baseClasses += ' alwaysbreak'; }
-    let sourceDataURL;
-    if (this.props.read_only === true && this.props.defaultValue && this.props.defaultValue.length > 0) {
-      if (this.props.defaultValue.indexOf(name > -1)) {
-        sourceDataURL = this.props.defaultValue;
-      } else {
-        sourceDataURL = `data:image/png;base64,${this.props.defaultValue}`;
-      }
-    }
+    // let sourceDataURL;
+    // if (this.props.read_only === true && this.props.defaultValue && this.props.defaultValue.length > 0) {
+    //   if (this.props.defaultValue.indexOf(name > -1)) {
+    //     sourceDataURL = this.props.defaultValue;
+    //   } else {
+    //     sourceDataURL = `data:image/png;base64,${this.props.defaultValue}`;
+    //   }
+    // }
 
     return (
       <div className={baseClasses}>
@@ -800,26 +817,32 @@ class Camera extends React.Component {
         <div className="form-group">
           <ComponentLabel {...this.props} />
           {this.props.read_only === true && this.props.defaultValue && this.props.defaultValue.length > 0
-            ? (<div><img src={sourceDataURL} /></div>)
-            : (<div className="image-upload-container">
-
-            <div style={fileInputStyle}>
-              <input name={name} type="file" accept="image/*" capture="camera" className="image-upload" onChange={this.displayImage} />
-              <div className="image-upload-control">
-                <div className="btn btn-default btn-school"><i className="fa fa-camera"></i> Upload Photo</div>
-                <p>Select an image from your computer or device.</p>
-              </div>
-            </div>
-
-            { this.state.img &&
-              <div>
-                <img src={ this.state.img } height="100" className="image-upload-preview" /><br />
-                <div className="btn btn-school btn-image-clear" onClick={this.clearImage}>
-                  <i className="fa fa-times"></i> Clear Photo
+            ? (<div><img src={this.state.img || this.state.img_link} /></div>)
+            : (
+              <div className="image-upload-container">
+                <div style={fileInputStyle}>
+                  <input name={name} type="file" accept="image/*" capture="camera" className="image-upload" onChange={this.displayImage} />
+                  <div className="image-upload-control">
+                    <div className="btn btn-default btn-school"><i className="fa fa-camera"></i> Upload Photo</div>
+                    <p>Select an image from your computer or device.</p>
+                  </div>
                 </div>
-              </div>
-            }
-          </div>)
+
+                { (this.state.img || this.state.img_link) &&
+                  <div>
+                    <a 
+                      href={this.state.img_link}
+                      target="_blank" rel="noopener noreferrer">
+                      <img src={ this.state.img || this.state.img_link } height="100" className="image-upload-preview" />
+                    </a>
+                    <br />
+                    <div className="btn btn-school btn-image-clear" onClick={this.clearImage}>
+                      <i className="fa fa-times"></i> Clear Photo
+                    </div>
+                  </div>
+                }
+            </div>
+          )
         }
         </div>
       </div>
@@ -835,6 +858,26 @@ class FileUpload extends React.Component {
       file_link: null,
       file_name: null
      };
+  }
+
+  componentDidMount() {
+    if (this.props.defaultValue !== "" && this.props.defaultValue !== undefined) {
+      let fileName;
+      const splitOnSlash = this.props.defaultValue.split("/")
+      fileName = splitOnSlash[1];
+      const indexHyp = fileName.indexOf("-")
+      fileName = fileName.substring(indexHyp + 1);
+      this.setState({file_name: fileName });
+      (async () => {
+        let link;
+        if (this.props.creatorId === undefined) {
+          link = await this.props.getS3File(this.props.defaultValue)
+        } else {
+          link = await this.props.getS3File(this.props.defaultValue, this.props.creatorId)
+        }
+        this.setState({ file_link: link });
+      })();
+    }
   }
 
   processFile = (e) => {
@@ -868,14 +911,14 @@ class FileUpload extends React.Component {
     const name = this.props.data.field_name;
     const fileInputStyle = this.state.file_link ? { display: 'none' } : null;
     if (this.props.data.pageBreakBefore) { baseClasses += ' alwaysbreak'; }
-    let sourceDataURL;
-    if (this.props.read_only === true && this.props.defaultValue && this.props.defaultValue.length > 0) {
-      if (this.props.defaultValue.indexOf(name > -1)) {
-        sourceDataURL = this.props.defaultValue;
-      } else {
-        sourceDataURL = `data:application/pdf;base64,${this.props.defaultValue}`;
-      }
-    }
+    // let sourceDataURL;
+    // if (this.props.read_only === true && this.props.defaultValue && this.props.defaultValue.length > 0) {
+    //   if (this.props.defaultValue.indexOf(name > -1)) {
+    //     sourceDataURL = this.props.defaultValue;
+    //   } else {
+    //     sourceDataURL = `data:application/pdf;base64,${this.props.defaultValue}`;
+    //   }
+    // }
 
     return (
       <div className={baseClasses}>
@@ -883,28 +926,30 @@ class FileUpload extends React.Component {
         <div className="form-group">
           <ComponentLabel {...this.props} />
           {this.props.read_only === true && this.props.defaultValue && this.props.defaultValue.length > 0
-            ? (<a href={sourceDataURL}>{this.state.file_name}</a>)
-            : (<div className="image-upload-container">
+            ? (<a href={this.state.file_link}>{this.state.file_name}</a>)
+            : (
+              <div className="image-upload-container">
 
-            <div style={fileInputStyle}>
-              <input name={name} type="file" accept="application/pdf,.doc,.docx,.txt" capture="camera" className="image-upload" onChange={this.processFile} />
-              <div className="image-upload-control">
-                <div className="btn btn-default btn-school"><i className="fa fa-file-text"></i> Upload File</div>
-                <p>Select a file from your computer or device.</p>
-              </div>
-            </div>
-
-            { this.state.file &&
-              <div>
-                <a 
-                  href={this.state.file_link}
-                  target="_blank" rel="noopener noreferrer">{this.state.file_name}</a>
-                <div className="btn btn-school btn-image-clear" onClick={this.clearFile}>
-                  <i className="fa fa-times"></i> Clear File
+                <div style={fileInputStyle}>
+                  <input name={name} type="file" accept="application/pdf,.doc,.docx,.txt" capture="camera" className="image-upload" onChange={this.processFile} />
+                  <div className="image-upload-control">
+                    <div className="btn btn-default btn-school"><i className="fa fa-file-text"></i> Upload File</div>
+                    <p>Select a file from your computer or device.</p>
+                  </div>
                 </div>
+
+                { (this.state.file || this.state.file_link) &&
+                  <div>
+                    <a 
+                      href={this.state.file_link}
+                      target="_blank" rel="noopener noreferrer">{this.state.file_name}</a>
+                    <div className="btn btn-school btn-image-clear" onClick={this.clearFile}>
+                      <i className="fa fa-times"></i> Clear File
+                    </div>
+                  </div>
+                }
               </div>
-            }
-          </div>)
+            )
         }
         </div>
       </div>
