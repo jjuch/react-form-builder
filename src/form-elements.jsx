@@ -748,6 +748,7 @@ class Camera extends React.Component {
     super(props);
     this.state = { 
       img: null,
+      original_link: null,
       file: null,
       img_link: null
     };
@@ -762,7 +763,7 @@ class Camera extends React.Component {
         } else {
           link = await this.props.getS3File(this.props.defaultValue, this.props.creatorId)
         }
-        this.setState({ img_link: link });
+        this.setState({ img_link: link, original_link: this.props.defaultValue });
       })();
     }
   }
@@ -792,6 +793,7 @@ class Camera extends React.Component {
   clearImage = () => {
     this.setState({
       img: null,
+      original_link: null,
       file: null,
       img_link: null
     });
@@ -855,6 +857,7 @@ class FileUpload extends React.Component {
     super(props);
     this.state = { 
       file: null,
+      original_link: null,
       file_link: null,
       file_name: null
      };
@@ -875,7 +878,7 @@ class FileUpload extends React.Component {
         } else {
           link = await this.props.getS3File(this.props.defaultValue, this.props.creatorId)
         }
-        this.setState({ file_link: link });
+        this.setState({ file_link: link, original_link: this.props.defaultValue });
       })();
     }
   }
@@ -901,6 +904,7 @@ class FileUpload extends React.Component {
   clearFile = () => {
     this.setState({
       file: null,
+      original_link: null,
       file_name: null,
       file_link: null
     });

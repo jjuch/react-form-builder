@@ -78,6 +78,7 @@ export default class ReactForm extends React.Component {
       element: item.element,
       value: '',
       file: '',
+      creatorId: '',
     };
     if (item.element === 'Rating') {
       $item.value = ref.inputField.current.state.rating;
@@ -87,12 +88,14 @@ export default class ReactForm extends React.Component {
       $item.value = ref.state.value;
     } else if (item.element === 'Camera') {
       // $item.value = ref.state.img ? ref.state.img.replace('data:image/png;base64,', '') : '';
-      $item.value = ref.state.img_link ? ref.state.img_link : '';
+      $item.value = ref.state.file ? ref.state.img_link : (ref.state.original_link ? ref.state.original_link : '');
       $item.file = ref.state.file ? ref.state.file : '';
+      $item.creatorId = ref.props.creatorId ? ref.props.creatorId: '';
     } else if (item.element === 'FileUpload') {
       // $item.value = ref.state.file ? ref.state.file('data:application/pdf;base64', '') : '';
-      $item.value = ref.state.file_link ? ref.state.file_link : '';
+      $item.value = ref.state.file ? ref.state.file_link : (ref.state.original_link ? ref.state.original_link : '');
       $item.file = ref.state.file ? ref.state.file : '';
+      $item.creatorId = ref.props.creatorId ? ref.props.creatorId: '';
     } else if (ref && ref.inputField) {
       $item = ReactDOM.findDOMNode(ref.inputField.current);
       if (typeof $item.value === 'string') {
@@ -173,10 +176,12 @@ export default class ReactForm extends React.Component {
       const itemValues = this._getItemValue(item, ref);
       itemData.value = itemValues.value;
       itemData.file = itemValues.file;
+      itemData.creatorId = itemValues.creatorId;
     } else if (item.element === 'FileUpload') {
       const itemValues = this._getItemValue(item, ref);
       itemData.value = itemValues.value;
       itemData.file = itemValues.file;
+      itemData.creatorId = itemValues.creatorId;
     } else {
       if (!ref) return null;
       itemData.value = this._getItemValue(item, ref).value;
